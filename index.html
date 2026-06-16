@@ -1,14 +1,188 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Incroyable Talent - Live Vote</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap');
+
+body {
+    margin: 0;
+    font-family: 'Montserrat', sans-serif;
+    background: radial-gradient(circle at top, #111, #000);
+    color: white;
+}
+
+/* INTRO */
+#intro {
+    position: fixed;
+    inset: 0;
+    background: black;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    animation: fadeOut 2s ease 3s forwards;
+}
+
+#intro h1 {
+    color: gold;
+    font-size: 42px;
+    animation: zoomIn 1.5s ease;
+}
+
+#intro p {
+    color: #aaa;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.3); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; visibility: hidden; }
+}
+
+/* LIVE */
+.live {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    background: red;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0.3; }
+}
+
+/* CONTAINER */
+.container {
+    width: 92%;
+    max-width: 550px;
+    margin: 90px auto;
+    background: rgba(20,20,20,0.9);
+    padding: 25px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,215,0,0.2);
+    box-shadow: 0 0 40px rgba(255,215,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    color: gold;
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin: 10px 0;
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.option:hover {
+    transform: scale(1.03);
+    background: rgba(255,215,0,0.08);
+}
+
+.option input {
+    margin-right: 10px;
+    transform: scale(1.2);
+    accent-color: gold;
+}
+
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 15px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg, gold, orange);
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#msg {
+    text-align: center;
+    margin-top: 10px;
+    color: #ffcc66;
+}
+
+.hidden { display: none; }
+
+#thanks {
+    text-align: center;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- INTRO -->
+<div id="intro">
+    <h1>🎭 INCROYABLE TALENT</h1>
+    <p>Le LIVE VOTE commence...</p>
+</div>
+
+<div class="live">🔴 LIVE</div>
+
+<div class="container">
+
+<h1>Vote pour ton finaliste</h1>
+
+<div id="vote">
+
+<div class="option"><input type="radio" name="v" value="Sania"> Sania</div>
+<div class="option"><input type="radio" name="v" value="Les Mickaels"> Les Mickaels</div>
+<div class="option"><input type="radio" name="v" value="Timéo"> Timéo</div>
+<div class="option"><input type="radio" name="v" value="Ambre"> Ambre</div>
+<div class="option"><input type="radio" name="v" value="Jana"> Jana</div>
+<div class="option"><input type="radio" name="v" value="M. Penin"> M. Penin</div>
+<div class="option"><input type="radio" name="v" value="Erik"> Erik</div>
+<div class="option"><input type="radio" name="v" value="Farès et Wassim"> Farès et Wassim</div>
+<div class="option"><input type="radio" name="v" value="Firouza"> Firouza</div>
+<div class="option"><input type="radio" name="v" value="Mathis, Brian et Rayan"> Mathis, Brian et Rayan</div>
+
+<button onclick="sendVote()">VOTER</button>
+
+<p id="msg"></p>
+
+</div>
+
+<div id="thanks" class="hidden">
+<h2>🎉 Merci pour ton vote !</h2>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
 <script>
 
-const VOTED_KEY = "hasVotedIncroyableTalent";
-const RESULTS_KEY = "results";
+const VOTED_KEY = "agt_voted";
+const RESULTS_KEY = "agt_results";
 
-/* CHECK SI DEJA VOTE */
+/* INTRO */
+setTimeout(() => {
+    document.getElementById("intro").style.display = "none";
+}, 3500);
+
+/* CHECK VOTE */
 function hasVoted() {
     return localStorage.getItem(VOTED_KEY) === "true";
 }
 
-/* MARQUER COMME VOTE */
 function markVoted() {
     localStorage.setItem(VOTED_KEY, "true");
 }
@@ -32,19 +206,16 @@ function playBuzzer() {
 
 /* CONFETTIS */
 function launchConfetti() {
-    if (typeof confetti === "function") {
-        confetti({
-            particleCount: 120,
-            spread: 80,
-            origin: { y: 0.6 }
-        });
-    }
+    confetti({
+        particleCount: 150,
+        spread: 90,
+        origin: { y: 0.6 }
+    });
 }
 
 /* VOTE */
 function sendVote() {
 
-    // 🚫 déjà voté
     if (hasVoted()) {
         document.getElementById("msg").innerText =
             "❌ Tu as déjà voté sur cet appareil.";
@@ -64,10 +235,8 @@ function sendVote() {
 
     localStorage.setItem(RESULTS_KEY, JSON.stringify(results));
 
-    // 🔒 verrouillage
     markVoted();
 
-    // effets show
     playBuzzer();
     launchConfetti();
 
@@ -75,7 +244,7 @@ function sendVote() {
     document.getElementById("thanks").classList.remove("hidden");
 }
 
-/* BLOQUAGE AU CHARGEMENT */
+/* BLOQUAGE */
 window.onload = function() {
     if (hasVoted()) {
         document.getElementById("vote").innerHTML =
@@ -84,3 +253,6 @@ window.onload = function() {
 };
 
 </script>
+
+</body>
+</html>
