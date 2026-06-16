@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Incroyable Talent - Vote</title>
+<title>Incroyable Talent - Live Vote</title>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap');
@@ -10,133 +10,135 @@
 body {
     margin: 0;
     font-family: 'Montserrat', sans-serif;
-    background: radial-gradient(circle at top, #1a1a1a, #000);
+    background: radial-gradient(circle at top, #111, #000);
     color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-}
-
-/* Container principal */
-.container {
-    width: 92%;
-    max-width: 550px;
-    background: rgba(20, 20, 20, 0.85);
-    border: 1px solid rgba(255, 215, 0, 0.25);
-    border-radius: 18px;
-    padding: 25px;
-    box-shadow: 0 0 40px rgba(255, 215, 0, 0.08);
-    position: relative;
     overflow: hidden;
 }
 
-/* effet lumière scène */
-.container::before {
-    content: "";
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255,215,0,0.08), transparent 60%);
-    animation: glow 6s infinite linear;
+/* INTRO */
+#intro {
+    position: fixed;
+    inset: 0;
+    background: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 999;
+    animation: fadeOut 2s ease 3s forwards;
 }
 
-@keyframes glow {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+#intro h1 {
+    color: gold;
+    font-size: 42px;
+    letter-spacing: 2px;
+    animation: zoomIn 1.5s ease;
+}
+
+#intro p {
+    color: #aaa;
+    margin-top: 10px;
+    animation: fadeIn 2s ease;
+}
+
+@keyframes zoomIn {
+    from { transform: scale(0.3); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    to { opacity: 0; visibility: hidden; }
+}
+
+/* LIVE */
+.live {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: red;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: bold;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0.3; }
+}
+
+/* CONTAINER */
+.container {
+    width: 92%;
+    max-width: 550px;
+    margin: 80px auto;
+    background: rgba(20,20,20,0.9);
+    padding: 25px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,215,0,0.2);
+    box-shadow: 0 0 40px rgba(255,215,0,0.1);
 }
 
 h1 {
     text-align: center;
-    font-size: 30px;
-    margin-bottom: 5px;
     color: gold;
-    letter-spacing: 1px;
 }
 
-h3 {
-    text-align: center;
-    font-weight: 400;
-    color: #ddd;
-    margin-bottom: 20px;
-}
-
-/* Options */
+/* OPTIONS */
 .option {
     display: flex;
     align-items: center;
     padding: 12px;
     margin: 10px 0;
     background: rgba(255,255,255,0.05);
-    border-radius: 12px;
-    border: 1px solid rgba(255,215,0,0.08);
+    border-radius: 10px;
     cursor: pointer;
-    transition: 0.25s;
+    transition: 0.2s;
 }
 
 .option:hover {
     transform: scale(1.03);
-    background: rgba(255, 215, 0, 0.08);
-    border-color: rgba(255, 215, 0, 0.3);
+    background: rgba(255,215,0,0.08);
 }
 
-.option input {
-    margin-right: 12px;
-    transform: scale(1.2);
-    accent-color: gold;
-}
-
-/* Bouton */
 button {
     width: 100%;
     padding: 14px;
     margin-top: 15px;
     border: none;
-    border-radius: 12px;
-    background: linear-gradient(90deg, #ffd700, #ffb300);
-    color: #111;
-    font-weight: 800;
-    font-size: 16px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, gold, orange);
+    font-weight: bold;
     cursor: pointer;
-    transition: 0.2s;
-    letter-spacing: 1px;
 }
 
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(255, 215, 0, 0.25);
-}
-
-button:active {
-    transform: scale(0.98);
-}
-
-/* messages */
-#msg {
-    margin-top: 10px;
-    text-align: center;
-    color: #ffcc66;
-}
-
-/* écran merci */
+/* THANKS */
 #thanks {
     text-align: center;
 }
 
-#thanks h2 {
-    color: gold;
-}
+.hidden { display: none; }
+
 </style>
 </head>
 
 <body>
 
+<!-- INTRO -->
+<div id="intro">
+    <h1>🎭 INCROYABLE TALENT</h1>
+    <p>Le LIVE VOTE commence...</p>
+</div>
+
+<div class="live">🔴 LIVE</div>
+
 <div class="container">
 
-<h1>🎭 Incroyable Talent</h1>
-<h3>Vote pour ton finaliste</h3>
+<h1>Vote pour ton finaliste</h1>
 
 <div id="vote">
 
@@ -145,11 +147,7 @@ button:active {
 <div class="option"><input type="radio" name="v" value="Timéo"> Timéo</div>
 <div class="option"><input type="radio" name="v" value="Ambre"> Ambre</div>
 <div class="option"><input type="radio" name="v" value="Jana"> Jana</div>
-<div class="option"><input type="radio" name="v" value="M. Penin"> M. Penin</div>
 <div class="option"><input type="radio" name="v" value="Erik"> Erik</div>
-<div class="option"><input type="radio" name="v" value="Farès et Wassim"> Farès et Wassim</div>
-<div class="option"><input type="radio" name="v" value="Firouza"> Firouza</div>
-<div class="option"><input type="radio" name="v" value="Mathis, Brian et Rayan"> Mathis, Brian et Rayan</div>
 
 <button onclick="sendVote()">VOTER</button>
 
@@ -159,44 +157,51 @@ button:active {
 
 <div id="thanks" class="hidden">
 <h2>🎉 Merci pour ton vote !</h2>
-<p>Ton vote a bien été enregistré.</p>
 </div>
 
 </div>
+
+<!-- CONFETTIS LIB -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
 <script>
 
-const COOLDOWN = 20 * 60 * 1000;
+/* INTRO AUTO CLOSE */
+setTimeout(() => {
+    document.getElementById("intro").style.display = "none";
+}, 3500);
 
-function getLastVoteTime() {
-    return localStorage.getItem("lastVoteTime");
+/* BUZZER SOUND */
+function playBuzzer() {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = "square";
+    osc.frequency.setValueAtTime(120, ctx.currentTime);
+
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    setTimeout(() => {
+        osc.stop();
+    }, 300);
 }
 
-function setLastVoteTime() {
-    localStorage.setItem("lastVoteTime", Date.now());
+/* CONFETTIS */
+function launchConfetti() {
+    confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 }
+    });
 }
 
-function checkCooldown() {
-    let last = getLastVoteTime();
-    if (!last) return false;
-    return (Date.now() - parseInt(last)) < COOLDOWN;
-}
-
-function getRemainingTime() {
-    let last = parseInt(getLastVoteTime());
-    let remaining = COOLDOWN - (Date.now() - last);
-    let minutes = Math.floor(remaining / 60000);
-    let seconds = Math.floor((remaining % 60000) / 1000);
-    return `${minutes}m ${seconds}s`;
-}
-
+/* VOTE */
 function sendVote() {
-
-    if (checkCooldown()) {
-        document.getElementById("msg").innerText =
-            "⏳ Attends encore " + getRemainingTime();
-        return;
-    }
 
     let choice = document.querySelector('input[name="v"]:checked');
 
@@ -205,12 +210,8 @@ function sendVote() {
         return;
     }
 
-    let results = JSON.parse(localStorage.getItem("results")) || {};
-
-    results[choice.value] = (results[choice.value] || 0) + 1;
-
-    localStorage.setItem("results", JSON.stringify(results));
-    setLastVoteTime();
+    playBuzzer();      // 🔊 buzzer
+    launchConfetti();  // 🎉 confettis
 
     document.getElementById("vote").classList.add("hidden");
     document.getElementById("thanks").classList.remove("hidden");
