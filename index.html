@@ -1,207 +1,55 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<title>Incroyable Talent - Live Vote</title>
-
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap');
-
-body {
-    margin: 0;
-    font-family: 'Montserrat', sans-serif;
-    background: radial-gradient(circle at top, #111, #000);
-    color: white;
-    overflow: hidden;
-}
-
-/* INTRO */
-#intro {
-    position: fixed;
-    inset: 0;
-    background: black;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    z-index: 999;
-    animation: fadeOut 2s ease 3s forwards;
-}
-
-#intro h1 {
-    color: gold;
-    font-size: 42px;
-    letter-spacing: 2px;
-    animation: zoomIn 1.5s ease;
-}
-
-#intro p {
-    color: #aaa;
-    margin-top: 10px;
-    animation: fadeIn 2s ease;
-}
-
-@keyframes zoomIn {
-    from { transform: scale(0.3); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes fadeOut {
-    to { opacity: 0; visibility: hidden; }
-}
-
-/* LIVE */
-.live {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: red;
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-weight: bold;
-    animation: blink 1s infinite;
-}
-
-@keyframes blink {
-    50% { opacity: 0.3; }
-}
-
-/* CONTAINER */
-.container {
-    width: 92%;
-    max-width: 550px;
-    margin: 80px auto;
-    background: rgba(20,20,20,0.9);
-    padding: 25px;
-    border-radius: 18px;
-    border: 1px solid rgba(255,215,0,0.2);
-    box-shadow: 0 0 40px rgba(255,215,0,0.1);
-}
-
-h1 {
-    text-align: center;
-    color: gold;
-}
-
-/* OPTIONS */
-.option {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    margin: 10px 0;
-    background: rgba(255,255,255,0.05);
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.2s;
-}
-
-.option:hover {
-    transform: scale(1.03);
-    background: rgba(255,215,0,0.08);
-}
-
-button {
-    width: 100%;
-    padding: 14px;
-    margin-top: 15px;
-    border: none;
-    border-radius: 10px;
-    background: linear-gradient(90deg, gold, orange);
-    font-weight: bold;
-    cursor: pointer;
-}
-
-/* THANKS */
-#thanks {
-    text-align: center;
-}
-
-.hidden { display: none; }
-
-</style>
-</head>
-
-<body>
-
-<!-- INTRO -->
-<div id="intro">
-    <h1>🎭 INCROYABLE TALENT</h1>
-    <p>Le LIVE VOTE commence...</p>
-</div>
-
-<div class="live">🔴 LIVE</div>
-
-<div class="container">
-
-<h1>Vote pour ton finaliste</h1>
-
-<div id="vote">
-
-<div class="option"><input type="radio" name="v" value="Sania"> Sania</div>
-<div class="option"><input type="radio" name="v" value="Les Mickaels"> Les Mickaels</div>
-<div class="option"><input type="radio" name="v" value="Timéo"> Timéo</div>
-<div class="option"><input type="radio" name="v" value="Ambre"> Ambre</div>
-<div class="option"><input type="radio" name="v" value="Jana"> Jana</div>
-<div class="option"><input type="radio" name="v" value="Erik"> Erik</div>
-
-<button onclick="sendVote()">VOTER</button>
-
-<p id="msg"></p>
-
-</div>
-
-<div id="thanks" class="hidden">
-<h2>🎉 Merci pour ton vote !</h2>
-</div>
-
-</div>
-
-<!-- CONFETTIS LIB -->
-<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
 <script>
 
-/* INTRO AUTO CLOSE */
-setTimeout(() => {
-    document.getElementById("intro").style.display = "none";
-}, 3500);
+const VOTED_KEY = "hasVotedIncroyableTalent";
+const RESULTS_KEY = "results";
 
-/* BUZZER SOUND */
+/* CHECK SI DEJA VOTE */
+function hasVoted() {
+    return localStorage.getItem(VOTED_KEY) === "true";
+}
+
+/* MARQUER COMME VOTE */
+function markVoted() {
+    localStorage.setItem(VOTED_KEY, "true");
+}
+
+/* BUZZER */
 function playBuzzer() {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
     osc.type = "square";
-    osc.frequency.setValueAtTime(120, ctx.currentTime);
-
+    osc.frequency.setValueAtTime(140, ctx.currentTime);
     gain.gain.setValueAtTime(0.3, ctx.currentTime);
 
     osc.connect(gain);
     gain.connect(ctx.destination);
 
     osc.start();
-    setTimeout(() => {
-        osc.stop();
-    }, 300);
+    setTimeout(() => osc.stop(), 250);
 }
 
 /* CONFETTIS */
 function launchConfetti() {
-    confetti({
-        particleCount: 120,
-        spread: 80,
-        origin: { y: 0.6 }
-    });
+    if (typeof confetti === "function") {
+        confetti({
+            particleCount: 120,
+            spread: 80,
+            origin: { y: 0.6 }
+        });
+    }
 }
 
 /* VOTE */
 function sendVote() {
+
+    // 🚫 déjà voté
+    if (hasVoted()) {
+        document.getElementById("msg").innerText =
+            "❌ Tu as déjà voté sur cet appareil.";
+        return;
+    }
 
     let choice = document.querySelector('input[name="v"]:checked');
 
@@ -210,14 +58,29 @@ function sendVote() {
         return;
     }
 
-    playBuzzer();      // 🔊 buzzer
-    launchConfetti();  // 🎉 confettis
+    let results = JSON.parse(localStorage.getItem(RESULTS_KEY)) || {};
+
+    results[choice.value] = (results[choice.value] || 0) + 1;
+
+    localStorage.setItem(RESULTS_KEY, JSON.stringify(results));
+
+    // 🔒 verrouillage
+    markVoted();
+
+    // effets show
+    playBuzzer();
+    launchConfetti();
 
     document.getElementById("vote").classList.add("hidden");
     document.getElementById("thanks").classList.remove("hidden");
 }
 
-</script>
+/* BLOQUAGE AU CHARGEMENT */
+window.onload = function() {
+    if (hasVoted()) {
+        document.getElementById("vote").innerHTML =
+            "<h3>❌ Tu as déjà voté sur cet appareil</h3>";
+    }
+};
 
-</body>
-</html>
+</script>
