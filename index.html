@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Incroyable Talent - Vote</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #111;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+    background: #222;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+input, button {
+    padding: 10px;
+    margin: 8px;
+    width: 80%;
+}
+
+button {
+    cursor: pointer;
+}
+
+.option {
+    text-align: left;
+    margin: 8px 0;
+}
+
+.hidden {
+    display: none;
+}
+
+h1 {
+    color: gold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎭 Incroyable Talent</h1>
+
+<!-- LOGIN -->
+<div id="login">
+    <p>🔐 Entrez votre code de vote :</p>
+    <input id="code" placeholder="Ex : A12">
+    <br>
+    <button onclick="checkCode()">Valider</button>
+    <p id="error" style="color:red;"></p>
+</div>
+
+<!-- VOTE -->
+<div id="vote" class="hidden">
+    <h3>🏆 Vote pour ton finaliste :</h3>
+
+    <div class="option"><input type="radio" name="v" value="Sania"> Sania</div>
+    <div class="option"><input type="radio" name="v" value="Les Mickaels"> Les Mickaels</div>
+    <div class="option"><input type="radio" name="v" value="Timéo"> Timéo</div>
+    <div class="option"><input type="radio" name="v" value="Ambre"> Ambre</div>
+    <div class="option"><input type="radio" name="v" value="Jana"> Jana</div>
+    <div class="option"><input type="radio" name="v" value="M. Penin"> M. Penin</div>
+    <div class="option"><input type="radio" name="v" value="Erik"> Erik</div>
+    <div class="option"><input type="radio" name="v" value="Farès et Wassim"> Farès et Wassim</div>
+    <div class="option"><input type="radio" name="v" value="Firouza"> Firouza</div>
+    <div class="option"><input type="radio" name="v" value="Mathis, Brian et Rayan"> Mathis, Brian et Rayan</div>
+
+    <button onclick="sendVote()">Voter</button>
+</div>
+
+<!-- THANKS -->
+<div id="thanks" class="hidden">
+    <h2>🎉 Merci pour ton vote !</h2>
+</div>
+
+</div>
+
+<script>
+
+// codes autorisés (tu peux en mettre 100)
+const validCodes = [
+"A1","A2","A3","A4","A5",
+"B1","B2","B3","B4","B5",
+"C1","C2","C3","C4","C5"
+];
+
+// stockage local
+let used = JSON.parse(localStorage.getItem("used")) || {};
+
+let currentCode = "";
+
+function checkCode() {
+    let code = document.getElementById("code").value.trim().toUpperCase();
+
+    if (!validCodes.includes(code)) {
+        document.getElementById("error").innerText = "Code invalide";
+        return;
+    }
+
+    if (used[code]) {
+        document.getElementById("error").innerText = "Code déjà utilisé";
+        return;
+    }
+
+    currentCode = code;
+
+    document.getElementById("login").classList.add("hidden");
+    document.getElementById("vote").classList.remove("hidden");
+}
+
+function sendVote() {
+    let choice = document.querySelector('input[name="v"]:checked');
+
+    if (!choice) {
+        alert("Choisis un candidat !");
+        return;
+    }
+
+    let results = JSON.parse(localStorage.getItem("results")) || {};
+
+    results[choice.value] = (results[choice.value] || 0) + 1;
+    used[currentCode] = true;
+
+    localStorage.setItem("results", JSON.stringify(results));
+    localStorage.setItem("used", JSON.stringify(used));
+
+    document.getElementById("vote").classList.add("hidden");
+    document.getElementById("thanks").classList.remove("hidden");
+}
+
+</script>
+
+</body>
+</html>
