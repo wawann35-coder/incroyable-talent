@@ -48,62 +48,81 @@ h1 {
 
 <h1>🎭 Incroyable Talent</h1>
 
-<!-- VOTE -->
 <div id="vote">
-    <h3>🏆 Vote pour ton finaliste :</h3>
 
-    <div class="option"><input type="radio" name="v" value="Sania"> Sania</div>
-    <div class="option"><input type="radio" name="v" value="Les Mickaels"> Les Mickaels</div>
-    <div class="option"><input type="radio" name="v" value="Timéo"> Timéo</div>
-    <div class="option"><input type="radio" name="v" value="Ambre"> Ambre</div>
-    <div class="option"><input type="radio" name="v" value="Jana"> Jana</div>
-    <div class="option"><input type="radio" name="v" value="M. Penin"> M. Penin</div>
-    <div class="option"><input type="radio" name="v" value="Erik"> Erik</div>
-    <div class="option"><input type="radio" name="v" value="Farès et Wassim"> Farès et Wassim</div>
-    <div class="option"><input type="radio" name="v" value="Firouza"> Firouza</div>
-    <div class="option"><input type="radio" name="v" value="Mathis, Brian et Rayan"> Mathis, Brian et Rayan</div>
+<h3>🏆 Vote pour ton finaliste :</h3>
 
-    <button onclick="sendVote()">Voter</button>
+<div class="option"><input type="radio" name="v" value="Sania"> Sania</div>
+<div class="option"><input type="radio" name="v" value="Les Mickaels"> Les Mickaels</div>
+<div class="option"><input type="radio" name="v" value="Timéo"> Timéo</div>
+<div class="option"><input type="radio" name="v" value="Ambre"> Ambre</div>
+<div class="option"><input type="radio" name="v" value="Jana"> Jana</div>
+<div class="option"><input type="radio" name="v" value="M. Penin"> M. Penin</div>
+<div class="option"><input type="radio" name="v" value="Erik"> Erik</div>
+<div class="option"><input type="radio" name="v" value="Farès et Wassim"> Farès et Wassim</div>
+<div class="option"><input type="radio" name="v" value="Firouza"> Firouza</div>
+<div class="option"><input type="radio" name="v" value="Mathis, Brian et Rayan"> Mathis, Brian et Rayan</div>
 
-    <p id="error" style="color:red;"></p>
+<button onclick="sendVote()">Voter</button>
+
+<p id="msg" style="color:orange;"></p>
+
 </div>
 
-<!-- THANKS -->
 <div id="thanks" class="hidden">
-    <h2>🎉 Merci pour ton vote !</h2>
+<h2>🎉 Merci pour ton vote !</h2>
+<p id="cooldownText"></p>
 </div>
 
 </div>
 
 <script>
 
-// 🔐 ID unique appareil (créé automatiquement)
-let deviceId = localStorage.getItem("deviceId");
+const COOLDOWN = 20 * 60 * 1000; // 20 minutes
 
-if (!deviceId) {
-    deviceId = crypto.randomUUID();
-    localStorage.setItem("deviceId", deviceId);
+function getLastVoteTime() {
+    return localStorage.getItem("lastVoteTime");
 }
 
-// 🔒 déjà voté ?
-let hasVoted = localStorage.getItem("hasVoted");
-
-if (hasVoted) {
-    document.getElementById("vote").innerHTML =
-        "<h2>🚫 Tu as déjà voté</h2>";
+function setLastVoteTime() {
+    localStorage.setItem("lastVoteTime", Date.now());
 }
 
+// 🔒 vérifier si bloqué
+function checkCooldown() {
+    let last = getLastVoteTime();
+
+    if (!last) return false;
+
+    let diff = Date.now() - parseInt(last);
+
+    return diff < COOLDOWN;
+}
+
+// afficher temps restant
+function getRemainingTime() {
+    let last = parseInt(getLastVoteTime());
+    let remaining = COOLDOWN - (Date.now() - last);
+
+    let minutes = Math.floor(remaining / 60000);
+    let seconds = Math.floor((remaining % 60000) / 1000);
+
+    return `${minutes}m ${seconds}s`;
+}
+
+// vote
 function sendVote() {
 
-    if (localStorage.getItem("hasVoted")) {
-        document.getElementById("error").innerText = "Tu as déjà voté.";
+    if (checkCooldown()) {
+        document.getElementById("msg").innerText =
+            "⏳ Tu dois attendre encore " + getRemainingTime();
         return;
     }
 
     let choice = document.querySelector('input[name="v"]:checked');
 
     if (!choice) {
-        document.getElementById("error").innerText = "Choisis un candidat";
+        document.getElementById("msg").innerText = "Choisis un candidat";
         return;
     }
 
@@ -112,10 +131,19 @@ function sendVote() {
     results[choice.value] = (results[choice.value] || 0) + 1;
 
     localStorage.setItem("results", JSON.stringify(results));
-    localStorage.setItem("hasVoted", "true");
+    setLastVoteTime();
 
     document.getElementById("vote").classList.add("hidden");
     document.getElementById("thanks").classList.remove("hidden");
+
+    document.getElementById("cooldownText").innerText =
+        "Reviens dans 20 minutes pour revoter.";
+}
+
+// si déjà en cooldown au chargement
+if (checkCooldown()) {
+    document.getElementById("msg").innerText =
+        "⏳ Vote bloqué. Attends : " + getRemainingTime();
 }
 
 </script>
